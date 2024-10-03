@@ -1,6 +1,6 @@
 public class TrainLine {
 
-    /** The name of the trainline */
+    /** The name of trainline */
     private String name;
     /** Points to the first station in the trainline */
     private TrainStation head;
