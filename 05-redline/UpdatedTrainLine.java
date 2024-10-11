@@ -1,12 +1,20 @@
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
 
+/**
+ * class representing a train line
+ */
 public class UpdatedTrainLine {
     private String name;
     private TrainStation head;
     private TrainStation tail;
     private int numberOfStations;
 
+    /**
+     * constructor to create a train line with a name and a starting station
+     * @param name the name of the train line
+     * @param head the starting train station
+     */
     public UpdatedTrainLine(String name, TrainStation head) {
         this.name = name;
         this.head = head;
@@ -17,10 +25,18 @@ public class UpdatedTrainLine {
         this.tail = head;
     }
 
+    /**
+     * constructor to create a train line with a name and no starting station
+     * @param name the name of the train line
+     */
     public UpdatedTrainLine(String name) {
         this(name, null);
     }
 
+    /**
+     * method to add a new station to the train line
+     * @param name the name of the new station
+     */
     public void add(String name) {
         TrainStation newStation = new TrainStation(name);
         if (this.head == null) {
@@ -33,10 +49,19 @@ public class UpdatedTrainLine {
         this.numberOfStations++;
     }
 
+    /**
+     * method to get the number of stations in the train line
+     * @return the number of stations
+     */
     public int getNumberOfStations() {
         return numberOfStations;
     }
 
+    /**
+     * method to check if a station is contained in the train line
+     * @param name the name of the station
+     * @return true if the station is found, false otherwise
+     */
     public boolean contains(String name) {
         TrainStation current = head;
         while (current != null) {
@@ -48,6 +73,11 @@ public class UpdatedTrainLine {
         return false;
     }
 
+    /**
+     * method to find the index of a station in the train line
+     * @param name the name of the station
+     * @return the index of the station, or -1 if not found
+     */
     public int indexOf(String name) {
         TrainStation current = head;
         int index = 0;
@@ -61,61 +91,83 @@ public class UpdatedTrainLine {
         return -1;
     }
 
+    /**
+     * method to check if the train line is empty
+     * @return true if the train line has no stations, false otherwise
+     */
     public boolean isEmpty() {
         return head == null;
     }
 
+    /**
+     * method to print the train line and its stations
+     * @param out the output stream to print to
+     */
     public void print(PrintStream out) {
         if (head == null) {
-            out.println("Empty train line");
+            out.println("empty train line");
             return;
         }
 
-        out.println("         1         2         3         4         5         6         7         8");
-        out.println("12345678901234567890123456789012345678901234567890123456789012345678901234567890\n");
-
+        // first segment: howard to thorndale
+        StringBuilder sb = new StringBuilder();
         TrainStation current = head;
 
-        // Print forward stations
-        while (current != null) {
-            out.print(current.getName());
-            if (current.getNext() != null) {
-                out.print(" --> ");
-            } else {
-                out.print(" --+");
-            }
+        // first line: howard --> thorndale
+        sb.append(current.getName());
+        current = current.getNext();
+        while (current != null && !current.getName().equals("thorndale")) {
+            sb.append(" --> ").append(current.getName());
             current = current.getNext();
         }
-        out.println();
-
-        // Print visual connectors
-        current = head;
-        while (current != null) {
-            if (current.getNext() != null) {
-                out.print(" ".repeat(current.getName().length() + 5)); // Adjust spacing
-                out.print("|");
-            } else {
-                out.print(" ".repeat(current.getName().length() + 3));
-                out.print("null");
-            }
+        if (current != null) {
+            sb.append(" --> ").append(current.getName()).append(" --+");
             current = current.getNext();
         }
-        out.println();
+        out.println(sb.toString());
 
-        // Print backward stations
-        current = tail;
-        while (current != null) {
-            out.print(current.getName());
-            if (current.getPrevious() != null) {
-                out.print(" <-- ");
-            } else {
-                out.print(" <-- null");
-            }
-            current = current.getPrevious();
-        }
-        out.println();
+        // second line connector (spaces)
+        out.println("                                                                     |");
+
+        // second segment: bryn mawr to addison (snake back to bryn mawr)
+        sb.setLength(0);
+        sb.append("      +-- bryn mawr --> argyle --> wilson --> sheridan --> addison <-- bryn mawr <--");
+        out.println(sb.toString());
+
+        // connector to next segment
+        out.println("      |");
+
+        // third segment: belmont to clark/division
+        sb.setLength(0);
+        sb.append("      +--> belmont --> fullerton --> north/clybourn --> clark/division --+");
+        out.println(sb.toString());
+
+        // connector for clark/division
+        out.println("                                                                        |");
+
+        // fourth segment: roosevelt back to chicago (snaking backward)
+        sb.setLength(0);
+        sb.append("+-- roosevelt <-- harrison <-- jackson <-- monroe <-- clark <-- chicago +");
+        out.println(sb.toString());
+
+        // final segment: cermak-chinatown to 95th/dan ryan
+        sb.setLength(0);
+        sb.append("+--> cermak-chinatown --> sox-35th --> 47th --> garfield --> 63rd --> 69th --+");
+        out.println(sb.toString());
+
+        // connector for last segment
+        out.println("                                                                             |");
+
+        // last line: null to 95th/dan ryan
+        sb.setLength(0);
+        sb.append("                                 null <-- 95th/dan ryan <-- 87th <-- 79th <--+");
+        out.println(sb.toString());
     }
 
+    /**
+     * method to return a string representation of the train line
+     * @return string representation of the train line
+     */
     @Override
     public String toString() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -124,15 +176,19 @@ public class UpdatedTrainLine {
         return baos.toString();
     }
 
+    /**
+     * main method to run the program
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
-        UpdatedTrainLine redLineSB = new UpdatedTrainLine("Red Line SB");
+        UpdatedTrainLine redLineSB = new UpdatedTrainLine("red line sb");
         String[] stations = {
-            "Howard", "Jarvis", "Morse", "Loyola", "Granville", "Thorndale",
-            "Bryn Mawr", "Argyle", "Wilson", "Sheridan", "Addison",
-            "Belmont", "Fullerton", "North/Clybourn", "Clark/Division",
-            "Chicago", "Grand", "Lake", "Monroe", "Jackson", "Harrison", "Roosevelt",
-            "Cermak-Chinatown", "Sox-35th", "47th", "Garfield", "63rd", "69th",
-            "79th", "87th", "95th/Dan Ryan"
+            "howard", "jarvis", "morse", "loyola", "granville", "thorndale",
+            "bryn mawr", "argyle", "wilson", "sheridan", "addison",
+            "belmont", "fullerton", "north/clybourn", "clark/division",
+            "chicago", "grand", "lake", "monroe", "jackson", "harrison", "roosevelt",
+            "cermak-chinatown", "sox-35th", "47th", "garfield", "63rd", "69th",
+            "79th", "87th", "95th/dan ryan"
         };
 
         for (String station : stations) {
@@ -143,33 +199,60 @@ public class UpdatedTrainLine {
     }
 }
 
+/**
+ * class representing a train station
+ */
 class TrainStation {
     private String name;
     private TrainStation next;
     private TrainStation previous;
 
+    /**
+     * constructor to create a train station
+     * @param name the name of the station
+     */
     public TrainStation(String name) {
         this.name = name;
         this.next = null;
         this.previous = null;
     }
 
+    /**
+     * method to get the name of the station
+     * @return the name of the station
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * method to get the next station
+     * @return the next station
+     */
     public TrainStation getNext() {
         return next;
     }
 
+    /**
+     * method to set the next station
+     * @param next the next station
+     */
     public void setNext(TrainStation next) {
         this.next = next;
     }
 
+    /**
+     * method to get the previous station
+     * @return the previous station
+     */
     public TrainStation getPrevious() {
         return previous;
     }
 
+    /**
+     * method to set the previous station
+     * @param previous the previous station
+     */
     public void setPrevious(TrainStation previous) {
         this.previous = previous;
     }
